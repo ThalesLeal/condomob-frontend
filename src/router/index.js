@@ -1,29 +1,52 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import HomeView from '../views/HomeView.vue'
+import { isValidToken } from '@/services/auth.service'
 
 Vue.use(VueRouter)
 
-const routes = [
-  {
-    path: '/',
-    name: 'home',
-    component: HomeView
-  },
-  {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
-  }
+const Layout = () => import(/* webpackChunkName: "layout" */ '@/layout/SApp')
+
+const routeOptions = [
+  { path: 'arquivo', name: 'arquivo/ArquivoList' },
+  { path: 'arquivo/cadastrar', name: 'arquivo/ArquivoCreate' },
 ]
+
+const routes = routeOptions.map(route => {
+  return {
+    ...route,
+    component: () => import(/* webpackChunkName: "[request]" */ `@/views/${route.name}`)
+  }
+})
 
 const router = new VueRouter({
   mode: 'history',
-  base: process.env.BASE_URL,
-  routes
+  routes: [
+    {
+      path: '/login',
+      name: 'Login',
+      component: () =>
+        import(/* webpackChunkName: "login" */ '@/views/Login')
+    },
+    {
+      path: '/',
+      component: Layout,
+      children: routes
+    },
+  ]
+})
+
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('condomob@accessToken')
+  const user = JSON.parse(localStorage.getItem('condomob@user'))
+  const { authorize } = to.meta
+  if (to.name !== 'Login' && !isValidToken(token)) { next({ name: 'Login' }) }
+  else if (user && !user.is_superuser && authorize && !user.roles.includes(authorize)) {
+    Vue.$toast.open({
+      message: "Você não tem permissão para executar esta ação",
+      type: "error",
+    })
+  }
+  else next()
 })
 
 export default router
