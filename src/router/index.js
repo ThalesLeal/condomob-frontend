@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import { isValidToken } from '@/services/auth.service'
 
+
 Vue.use(VueRouter)
 
 const Layout = () => import(/* webpackChunkName: "layout" */ '@/layout/SApp')
@@ -45,6 +46,7 @@ router.beforeEach((to, from, next) => {
       message: "Você não tem permissão para executar esta ação",
       type: "error",
     })
+    next(false) // Bloqueia a navegação
   }
   else next()
 })
