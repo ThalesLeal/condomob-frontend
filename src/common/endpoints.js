@@ -1,5 +1,5 @@
 const endpoints = {
-    DOCUMENTO: 'api/documento',
-  }
-  
-  export default endpoints
+  DOCUMENTO: 'api/documento',
+}
+
+export default endpoints
