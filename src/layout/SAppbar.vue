@@ -6,8 +6,8 @@
     flat
   >
     <v-img
-      src="@/assets/condomob.png"
-      max-width="180"
+      src="@/assets/logo-condomob.png"
+      max-width="280"
     />
     <v-spacer />
     <v-menu offset-y>
