@@ -1,5 +1,5 @@
 <template>
-  <div> 
+  <div>
     <!-- Botão de Histórico com Ícone de Histórico -->
     <v-btn
       color="secondary"
@@ -10,7 +10,7 @@
       </v-icon>
       Histórico
     </v-btn>
-
+  
     <v-data-table
       :headers="headers"
       :items="items"
@@ -21,14 +21,29 @@
         'items-per-page-options': [10, 20, 30]
       }"
     >
-      <template #[`item.data`]="{ item }">
-        {{ formatDateTime(item.data_gerado) }}
+      <template #[`item.data_gerado`]="{ item }">
+        {{ formatDate(item.data_gerado) }}
+      </template>
+      <template #[`item.descricao`]="{ item }">
+        {{ item.descricao }}
+      </template>
+      <template #[`item.actions`]="{ item }">
+        <v-btn
+          color="primary"
+          @click="baixarArquivo(item.id)"
+        >
+          <v-icon left>
+            mdi-download
+          </v-icon> Baixar
+        </v-btn>
       </template>
     </v-data-table>
   </div>
 </template>
   
   <script>
+  import * as documentoService from '@/services/documento.service'
+
   export default {
     name: 'DocumentoList',
     props: {
@@ -39,6 +54,7 @@
         { text: 'Data', value: 'data_gerado' },
         { text: 'Descrição', value: 'descricao' },
         { text: 'Usuário', value: 'usuario' },
+        { text: 'Ações', value: 'actions', sortable: false },
       ],
       items: [],
       totalItems: 0,
@@ -73,6 +89,25 @@
           this.$toast.error('Erro ao buscar histórico.')
         }
       },
+      async baixarArquivo(documentoId) {
+        try {
+          const response = await documentoService.carregarArquivo({
+            resource: `${this.$endpoints.DOCUMENTO}/segunda_via/`,
+            data: {
+                id_arquivo: documentoId
+            }
+          });
+          const downloadUrl = window.URL.createObjectURL(response.data)
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.setAttribute('download', `documento_${documentoId}.csv`); // ou outro nome do arquivo desejado
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+        } catch (error) {
+          this.$toast.error('Erro ao baixar o arquivo.')
+        }
+      },
       async uploadFile() {
         if (!this.file) {
           this.$toast.error('Por favor, selecione um arquivo para enviar.')
@@ -96,9 +131,13 @@
           this.$toast.error('Erro ao enviar o arquivo.')
         }
       },
-      formatDateTime(dateTime) {
-        // Função para formatar a data e hora, se necessário
-        return new Date(dateTime).toLocaleString()
+      formatDate(dateTime) {
+        const date = new Date(dateTime)
+        return date.toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        })
       }
     }
   }
@@ -111,6 +150,10 @@
   
   .upload-btn {
     width: 100%;
+  }
+  
+  .mt-4 {
+    margin-top: 16px; /* Ajuste conforme necessário */
   }
   </style>
   
