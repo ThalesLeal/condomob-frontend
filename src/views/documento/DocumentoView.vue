@@ -10,7 +10,7 @@
             <v-card-text>
               <v-data-table
                 :headers="headers"
-                :items="dados"
+                :items="documento"
                 class="elevation-1"
               />
             </v-card-text>
@@ -30,29 +30,26 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 
 export default {
   name: 'DocumentoView',
-  props: ['id'],
   data: () => ({
-    dados: [],
-    headers: [], // Defina as colunas conforme necessário
+    documento: [],
+    headers: [] // Defina as colunas conforme necessário
   }),
   created() {
-    this.carregarDados();
+    this.getDocumento(this.$route.params.id)
   },
   methods: {
-    async carregarDados() {
+    async getDocumento(documentoId) {
       try {
-        console.log(`Carregando dados para o documento ID: ${this.id}`);
-        const response = await axios.get(`/api/documento/visualizar`, {
+        const response = await axios.get(`/api/documento/`, {
           params: {
-            id_arquivo: this.id
+            id_arquivo: documentoId
           }
         });
-        console.log('Dados carregados:', response.data);
-        this.dados = response.data;
+        this.documento = response.data;
         if (response.data.length > 0) {
           this.headers = Object.keys(response.data[0]).map(key => ({ text: key, value: key }));
         }
@@ -62,10 +59,10 @@ export default {
       }
     },
     voltar() {
-      this.$router.push('/documento/historico');
+      this.$router.push('/documento/visualizar');
     }
   }
-};
+}
 </script>
 
 <style scoped>

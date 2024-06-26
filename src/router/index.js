@@ -6,12 +6,10 @@ Vue.use(VueRouter);
 
 const Layout = () => import(/* webpackChunkName: "layout" */ '@/layout/SApp');
 
-// Defina suas rotas
 const routeOptions = [
-  { path: 'permissao', name: 'permissao/PermissaoList' },
   { path: 'documento', name: 'documento/DocumentoCreate' },
   { path: 'documento/historico', name: 'documento/DocumentoList' },
-  { path: 'documento/visualizar/:id', name: 'documento/DocumentoView', props: true } // Adicionada rota para visualização
+  { path: 'documento/visualizar/:id', name: 'documento/DocumentoView', props: true }
 ];
 
 const routes = routeOptions.map(route => {
