@@ -4,6 +4,7 @@
     <v-btn
       color="secondary"
       class="mt-4"
+      @click="getHistorico"
     >
       <v-icon class="mr-2">
         mdi-history
@@ -34,7 +35,17 @@
         >
           <v-icon left>
             mdi-download
-          </v-icon> Baixar
+          </v-icon>
+          Baixar
+        </v-btn>
+        <v-btn
+          color="secondary"
+          @click="visualizarArquivo(item.id)"
+        >
+          <v-icon left>
+            mdi-eye
+          </v-icon>
+          Visualizar
         </v-btn>
       </template>
     </v-data-table>
@@ -108,6 +119,9 @@
           this.$toast.error('Erro ao baixar o arquivo.')
         }
       },
+      visualizarArquivo(documentoId) {
+      this.$router.push({ name: 'documento/DocumentoView', params: { id: documentoId } });
+    },
       async uploadFile() {
         if (!this.file) {
           this.$toast.error('Por favor, selecione um arquivo para enviar.')
