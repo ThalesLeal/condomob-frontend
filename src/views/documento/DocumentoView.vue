@@ -30,36 +30,49 @@
 </template>
 
 <script>
-import axios from 'axios'
+import http from '@/services/http';
 
 export default {
   name: 'DocumentoView',
   data: () => ({
-    documento: [],
-    headers: [] // Defina as colunas conforme necessário
+    headers: [
+      { text: 'ID_UNIDADE', value: 'ID_UNIDADE' },
+      { text: 'VENCIMENTO', value: 'VENCIMENTO' },
+      { text: 'TOKEN_CONTA', value: 'TOKEN_CONTA' },
+      { text: 'NOSSO_NUMERO', value: 'NOSSO_NUMERO' },
+      { text: 'ID_CONDOMINIO', value: 'ID_CONDOMINIO' },
+      { text: 'TAXA_DE_JUROS', value: 'TAXA_DE_JUROS' },
+      { text: 'TAXA_DE_MULTA', value: 'TAXA_DE_MULTA' },
+      { text: 'TAXA_DE_DESCONTO', value: 'TAXA_DE_DESCONTO' },
+      { text: 'CONTA_BANCARIA', value: 'CONTA_BANCARIA' },
+      { text: 'TOKEN_FACILITADOR', value: 'TOKEN_FACILITADOR' },
+      { text: 'DATA_DE_COMPETENCIA', value: 'DATA_DE_COMPETENCIA' },
+      { text: 'COBRANCA_EXTRAORDINARIA', value: 'COBRANCA_EXTRAORDINARIA' },
+      // Adicione mais headers conforme necessário
+    ],
+    documento: []
   }),
   created() {
-    this.getDocumento(this.$route.params.id)
+    this.carregarDados(this.$route.params.id)
   },
   methods: {
-    async getDocumento(documentoId) {
+    async carregarDados(documentoId) {
       try {
-        const response = await axios.get(`/api/documento/`, {
+        console.log(`Carregando dados para o documento ID: ${documentoId}`)
+        const response = await http.get('/documento/visualizar', {
           params: {
             id_arquivo: documentoId
           }
-        });
-        this.documento = response.data;
-        if (response.data.length > 0) {
-          this.headers = Object.keys(response.data[0]).map(key => ({ text: key, value: key }));
-        }
+        })
+        console.log('Dados carregados:', response.data)
+        this.documento = Array.isArray(response.data) ? response.data : [response.data]
       } catch (error) {
-        console.error('Erro ao carregar os dados do documento:', error);
-        this.$toast.error('Erro ao carregar os dados do documento.');
+        console.error('Erro ao carregar os dados do documento:', error)
+        this.$toast.error('Erro ao carregar os dados do documento.')
       }
     },
     voltar() {
-      this.$router.push('/documento/visualizar');
+      this.$router.push('/documento/historico')
     }
   }
 }
